@@ -1,7 +1,7 @@
 import argparse
 import hashlib
-import string
 import random
+import string
 import uuid
 
 
@@ -44,12 +44,14 @@ def hashPass(passString: str, method: str) -> str:
             return "Method not supported"
 
 
-def hashText(text):
+def hashText(text: str) -> str:
+    "Hash provided text + :salt"
     salt = uuid.uuid4().hex
     return hashlib.sha256(salt.encode() + text.encode()).hexdigest() + ':' + salt
 
 
-def matchHashedText(hashedText, providedText):
+def matchHashedText(hashedText: str, providedText: str) -> str:
+    "Check if providedText match with hashedText"
     _hashedText, salt = hashedText.split(':')
     return _hashedText == hashlib.sha256(salt.encode() + providedText.encode()).hexdigest()
 
@@ -63,9 +65,14 @@ if __name__ == "__main__":
     parser.add_argument("--path", "-p", type=str, help="Path to dictionary")
     parser.add_argument("--hashed", "-ha", type=str, help="Hash to decode")
     args = parser.parse_args()
+
     if args.action == "create":
         print(createPassword(args.password))
     if args.action == "find":
         print(findHash(args.hashed, args.path))
     if args.action == "hash":
         print(hashPass(args.password, args.method))
+    if args.action == "match":
+        print(matchHashedText(args.password, args.hashed))
+    if args.action == "hashsalt":
+        print(hashText(args.password))
